@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart'; // Add the image_picker package
 
 class CvScreen extends StatefulWidget {
   const CvScreen({super.key});
@@ -9,6 +11,8 @@ class CvScreen extends StatefulWidget {
 
 class _CvScreenState extends State<CvScreen> {
   int _selectedIndex = -1;
+  ImageProvider<Object> _image =
+      const AssetImage('images/pic.jpg'); // Default image
 
   static const List<Widget> _widgetOptions = <Widget>[
     EducationWidget(),
@@ -24,9 +28,12 @@ class _CvScreenState extends State<CvScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 40),
-          const CircleAvatar(
-            radius: 100,
-            backgroundImage: AssetImage('images/pic.jpg'),
+          GestureDetector(
+            onTap: _changeImage, // Detect the tap to change image
+            child: CircleAvatar(
+              radius: 100,
+              backgroundImage: _image,
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -60,6 +67,18 @@ class _CvScreenState extends State<CvScreen> {
         ],
       ),
     );
+  }
+
+  void _changeImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery); // Pick from gallery
+    if (pickedFile != null) {
+      setState(() {
+        _image = FileImage(
+            File(pickedFile.path)); // Update the image to the picked one
+      });
+    }
   }
 
   void _onItemTapped(int index) {
